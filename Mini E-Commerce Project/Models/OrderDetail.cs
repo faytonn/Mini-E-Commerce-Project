@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Mini_E_Commerce_Project.Models.Common;
 
 namespace Mini_E_Commerce_Project.Models
 {
-    internal class OrderDetail
+    public class OrderDetail : BaseEntity
     {
+        public int OrderId { get; set; }
+        public Order? Orders { get; set; }
+        public int ProductId { get; set; }
+        public Product? Products { get; set; }
+        public int Quantity { get; set; }
+        public decimal PricePerItem { get; set; }
     }
 }

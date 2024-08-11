@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Mini_E_Commerce_Project.Models;
 
 namespace Mini_E_Commerce_Project.Configurations
 {
-    internal class OrderConfiguration
+    public class OrderConfiguration : IEntityTypeConfiguration<Order>
     {
+        public void Configure(EntityTypeBuilder<Order> builder)
+        {
+            builder.HasKey(o => o.Id);
+            builder.HasIndex(o => o.Id);
+            builder.Property(o => o.OrderDate).IsRequired();
+            builder.Property(o => o.TotalAmount).IsRequired();
+            builder.Property(o => o.Status).IsRequired();
+            builder.HasOne(o => o.Users).WithMany().HasForeignKey(o => o.UserId);
+            builder.HasMany(o => o.OrderDetails).WithOne(od => od.Orders).HasForeignKey(od => od.OrderId);
+        }
     }
 }
