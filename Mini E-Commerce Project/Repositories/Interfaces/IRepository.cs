@@ -1,4 +1,5 @@
 ﻿using Mini_E_Commerce_Project.Models.Common;
+using System.Linq.Expressions;
 
 namespace Mini_E_Commerce_Project.Repositories.Interfaces
 {
@@ -10,6 +11,7 @@ namespace Mini_E_Commerce_Project.Repositories.Interfaces
         void Update(T entity);
         void Delete(T entity);
         Task<int> SaveChangesAsync();
+        Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
 
     }
 }

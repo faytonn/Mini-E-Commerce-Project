@@ -1,8 +1,7 @@
-﻿namespace Mini_E_Commerce_Project.DTO
+﻿namespace Mini_E_Commerce_Project.DTO.ServiceDTO
 {
-    public record UserDTO
+    public record CreateUserDTO
     {
-        public int Id { get; set; }
         public string FullName { get; set; } = null!;
         public string Email { get; set; } = null!;
         public string Address { get; set; } = null!;

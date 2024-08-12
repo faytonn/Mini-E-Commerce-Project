@@ -15,6 +15,8 @@ namespace Mini_E_Commerce_Project.Configurations
             builder.Property(o => o.Status).IsRequired();
             builder.HasOne(o => o.Users).WithMany().HasForeignKey(o => o.UserId);
             builder.HasMany(o => o.OrderDetails).WithOne(od => od.Orders).HasForeignKey(od => od.OrderId);
+
+            builder.HasCheckConstraint("CK_TotalAmount", "TotalAmount > 0");
         }
     }
 }

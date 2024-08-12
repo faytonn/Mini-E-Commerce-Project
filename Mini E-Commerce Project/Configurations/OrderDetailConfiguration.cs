@@ -10,9 +10,11 @@ namespace Mini_E_Commerce_Project.Configurations
         {
             builder.HasKey(od => od.Id);
             builder.HasIndex(od => od.Id);
+            builder.Property(od => od.OrderId).IsRequired();
+            builder.Property(od => od.ProductId).IsRequired();
             builder.Property(od => od.Quantity).IsRequired();
             builder.Property(od => od.PricePerItem).IsRequired();
-            builder.
+            
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Mini_E_Commerce_Project.DTO;
+﻿using Mini_E_Commerce_Project.DTO.DTOModels;
 
 namespace Mini_E_Commerce_Project.Services.Interfaces
 {

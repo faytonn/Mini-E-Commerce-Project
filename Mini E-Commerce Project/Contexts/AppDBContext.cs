@@ -17,10 +17,7 @@ namespace Mini_E_Commerce_Project.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductConfiguration).Assembly);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderConfiguration).Assembly);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrderDetailConfiguration).Assembly);
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(PaymentConfiguration).Assembly);
+        
             base.OnModelCreating(modelBuilder);
         }
 
