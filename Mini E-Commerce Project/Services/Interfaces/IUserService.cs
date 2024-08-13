@@ -1,13 +1,14 @@
-﻿using Mini_E_Commerce_Project.DTO.DTOModels;
+﻿using Mini_E_Commerce_Project.DTO.GetDTO;
+using Mini_E_Commerce_Project.DTO.InsertDTO;
+using Mini_E_Commerce_Project.DTO.ServiceDTO;
+using Mini_E_Commerce_Project.Models;
 
 namespace Mini_E_Commerce_Project.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<List<UserDTO>> GetAllUsersAsync();
-        Task<UserDTO> GetUserByIdAsync(int id);
-        Task CreateUserAsync(UserDTO userDto);
-        Task UpdateUserAsync(UserDTO userDto);
-        Task DeleteUserAsync(int id);
+        Task RegisterAsync(CreateUserDTO registerUser);
+        Task LoginAsync (User loginUser);
+        Task UpdateUserAsync(InsertUserDTO userDto);
     }
 }

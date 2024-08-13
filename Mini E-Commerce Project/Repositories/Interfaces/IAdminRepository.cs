@@ -3,7 +3,7 @@ using Mini_E_Commerce_Project.Repositories.Interfaces.Generic;
 
 namespace Mini_E_Commerce_Project.Repositories.Interfaces
 {
-    public interface IUserRepository : IRepository<User>
+    public interface IAdminRepository : IRepository<User>
     {
     }
 }

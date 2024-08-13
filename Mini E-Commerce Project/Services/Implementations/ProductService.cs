@@ -1,4 +1,5 @@
-﻿using Mini_E_Commerce_Project.DTO.DTOModels;
+﻿using Mini_E_Commerce_Project.DTO.GetDTO;
+using Mini_E_Commerce_Project.DTO.InsertDTO;
 using Mini_E_Commerce_Project.DTO.ServiceDTO;
 using Mini_E_Commerce_Project.Exceptions;
 using Mini_E_Commerce_Project.Models;
@@ -11,12 +12,10 @@ namespace Mini_E_Commerce_Project.Services.Implementations
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
-        private readonly IUserRepository _userRepository;
-
+        
         public ProductService()
         {
             _productRepository = new ProductRepository();
-            _userRepository = new UserRepository();
         }
 
         public async Task CreateProduct(CreateProductDTO newProduct)
@@ -41,24 +40,84 @@ namespace Mini_E_Commerce_Project.Services.Implementations
             await _productRepository.SaveChangesAsync();  
         }
 
-        public Task DeleteProduct(int id)
+        
+
+        public async Task DeleteProduct(int id)
         {
+            var product = await _productRepository.GetSingleAsync(p => p.Id == id);
+
+            if (product is null)
+            {
+                throw new NotFoundException("Product not found.");
+            }
+            _productRepository.Delete(product);
+            await _productRepository.SaveChangesAsync();
+        }
+
+        public async Task<GetProductDTO> GetProductById(int id)
+        {
+            var product = await _productRepository.GetSingleAsync(p => p.Id == id);
+
+            if (product == null)
+            {
+                throw new NotFoundException("Product not found.");
+            }
+
+            return new GetProductDTO
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Stock = product.Stock,
+                Description = product.Description
+            };
 
         }
 
-        public Task<ProductDTO> GetProductById(int id)
+        public async Task<List<GetProductDTO>> GetProducts()
         {
-            throw new NotImplementedException();
+            var products = await _productRepository.GetAllAsync();
+
+            var productDTOs = new List<GetProductDTO>();
+
+            foreach(var product in products)
+            {
+                var productDTO = new GetProductDTO
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Price = product.Price,
+                    Stock = product.Stock,
+                    Description = product.Description,
+                    
+                };  
+                productDTOs.Add(productDTO);
+            }
+            return productDTOs;
         }
 
-        public Task<List<ProductDTO>> GetProducts()
+        public async Task UpdateProduct(int id, InsertProductDTO updatedProduct)
         {
-            throw new NotImplementedException();
+            var product = await _productRepository.GetSingleAsync(p => p.Id == id);
+
+            if (product == null )
+            {
+                throw new NotFoundException("Product not found.");
+            }
+            if (string.IsNullOrWhiteSpace(updatedProduct.Name) || updatedProduct.Price < 0)
+            {
+                throw new InvalidProductException("Invalid product data");
+            }
+
+            updatedProduct.Id = product.Id;
+            updatedProduct.Name = product.Name;
+            updatedProduct.Price = product.Price;
+            updatedProduct.Stock = product.Stock;
+            updatedProduct.Description = product.Description;
+
+             _productRepository.Update(product);
+            await _productRepository.SaveChangesAsync();
         }
 
-        public Task UpdateProduct(int id, ProductDTO updatedProduct)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

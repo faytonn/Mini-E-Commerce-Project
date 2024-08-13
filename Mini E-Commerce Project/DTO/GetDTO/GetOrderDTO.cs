@@ -12,7 +12,7 @@ namespace Mini_E_Commerce_Project.DTO.GetDTO
     public record GetOrderDTO
     {
         public int UserId { get; set; }
-        public List<OrderDetailDTO>? OrderDetails { get; set; }
+        public List<CreateOrderDetailDTO>? OrderDetails { get; set; }
         public decimal TotalAmount { get; set; }
         public StatusEnum Status { get; set; }
 

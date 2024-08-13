@@ -12,7 +12,7 @@ namespace Mini_E_Commerce_Project.Configurations
             builder.HasIndex(o => o.Id);
             builder.Property(o => o.OrderDate).IsRequired();
             builder.Property(o => o.TotalAmount).IsRequired();
-            builder.Property(o => o.Status).IsRequired();
+            builder.Property(o => o.Status).IsRequired().HasDefaultValue(0);
             builder.HasOne(o => o.Users).WithMany().HasForeignKey(o => o.UserId);
             builder.HasMany(o => o.OrderDetails).WithOne(od => od.Orders).HasForeignKey(od => od.OrderId);
 

@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Mini_E_Commerce_Project.Contexts;
 using Mini_E_Commerce_Project.Models.Common;
-using Mini_E_Commerce_Project.Repositories.Interfaces;
+using Mini_E_Commerce_Project.Repositories.Interfaces.Generic;
 using System.Linq.Expressions;
 
-namespace Mini_E_Commerce_Project.Repositories.Implementations
+namespace Mini_E_Commerce_Project.Repositories.Implementations.Generic
 {
     public class Repository<T> : IRepository<T> where T : BaseEntity
     {
@@ -30,7 +30,7 @@ namespace Mini_E_Commerce_Project.Repositories.Implementations
         {
             var query = _context.Set<T>().AsQueryable();  //selecting and piling
 
-            foreach(var include in includes) 
+            foreach (var include in includes)
             {
                 query = query.Include(include);
             }
@@ -48,7 +48,7 @@ namespace Mini_E_Commerce_Project.Repositories.Implementations
 
         public async Task<int> SaveChangesAsync()
         {
-           return await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
 
         public void Update(T entity)
@@ -62,5 +62,20 @@ namespace Mini_E_Commerce_Project.Repositories.Implementations
 
             return result;
         }
+
+        public async Task<T>? GetSingleAsync(Expression<Func<T, bool>> predicate, params string[] includes)
+        {
+            var query = _context.Set<T>().AsQueryable();
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            var result = await query.FirstOrDefaultAsync(predicate);
+
+            return result;
+        }
+
+
     }
 }
