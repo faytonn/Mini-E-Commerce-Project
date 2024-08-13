@@ -1,4 +1,4 @@
-﻿using Mini_E_Commerce_Project.Services.Interfaces;
+﻿using Mini_E_Commerce_Project.Services.AdminInterfaces;
 
 namespace Mini_E_Commerce_Project.Contexts.Services
 {

@@ -1,18 +1,18 @@
-﻿using Mini_E_Commerce_Project.DTO.GetDTO;
+﻿using Mini_E_Commerce_Project.DTO.GetDTO.UserAccessedDTO;
 using Mini_E_Commerce_Project.DTO.InsertDTO;
 using Mini_E_Commerce_Project.DTO.ServiceDTO;
 using Mini_E_Commerce_Project.Exceptions;
 using Mini_E_Commerce_Project.Models;
 using Mini_E_Commerce_Project.Repositories.Implementations;
 using Mini_E_Commerce_Project.Repositories.Interfaces;
-using Mini_E_Commerce_Project.Services.Interfaces;
+using Mini_E_Commerce_Project.Services.AdminInterfaces;
 
-namespace Mini_E_Commerce_Project.Services.Implementations
+namespace Mini_E_Commerce_Project.Services.AdminImplementations
 {
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
-        
+
         public ProductService()
         {
             _productRepository = new ProductRepository();
@@ -37,10 +37,10 @@ namespace Mini_E_Commerce_Project.Services.Implementations
             };
 
             await _productRepository.CreateAsync(product);
-            await _productRepository.SaveChangesAsync();  
+            await _productRepository.SaveChangesAsync();
         }
 
-        
+
 
         public async Task DeleteProduct(int id)
         {
@@ -80,7 +80,7 @@ namespace Mini_E_Commerce_Project.Services.Implementations
 
             var productDTOs = new List<GetProductDTO>();
 
-            foreach(var product in products)
+            foreach (var product in products)
             {
                 var productDTO = new GetProductDTO
                 {
@@ -89,8 +89,8 @@ namespace Mini_E_Commerce_Project.Services.Implementations
                     Price = product.Price,
                     Stock = product.Stock,
                     Description = product.Description,
-                    
-                };  
+
+                };
                 productDTOs.Add(productDTO);
             }
             return productDTOs;
@@ -100,7 +100,7 @@ namespace Mini_E_Commerce_Project.Services.Implementations
         {
             var product = await _productRepository.GetSingleAsync(p => p.Id == id);
 
-            if (product == null )
+            if (product == null)
             {
                 throw new NotFoundException("Product not found.");
             }
@@ -115,7 +115,7 @@ namespace Mini_E_Commerce_Project.Services.Implementations
             updatedProduct.Stock = product.Stock;
             updatedProduct.Description = product.Description;
 
-             _productRepository.Update(product);
+            _productRepository.Update(product);
             await _productRepository.SaveChangesAsync();
         }
 

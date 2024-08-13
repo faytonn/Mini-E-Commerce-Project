@@ -7,7 +7,7 @@ using Mini_E_Commerce_Project.Repositories.Implementations;
 using Mini_E_Commerce_Project.Repositories.Interfaces;
 using Mini_E_Commerce_Project.Services.Interfaces;
 
-namespace Mini_E_Commerce_Project.Services.Implementations
+namespace Mini_E_Commerce_Project.Services.AdminImplementations
 {
     public class UserService : IUserService
     {
@@ -77,7 +77,7 @@ namespace Mini_E_Commerce_Project.Services.Implementations
 
             };
 
-             _userRepository.Update(user);
+            _userRepository.Update(user);
             await _userRepository.SaveChangesAsync();
         }
     }

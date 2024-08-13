@@ -1,6 +1,6 @@
-﻿namespace Mini_E_Commerce_Project.DTO.GetDTO
+﻿namespace Mini_E_Commerce_Project.DTO.GetDTO.AdminAccessedDTO
 {
-    public record GetPaymentDTO
+    public record GetPaymentDTOAdmin
     {
         public int OrderId { get; set; }
         public decimal Amount { get; set; }

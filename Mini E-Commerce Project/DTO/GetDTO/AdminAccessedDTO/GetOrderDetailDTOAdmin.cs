@@ -1,13 +1,13 @@
 ﻿using Mini_E_Commerce_Project.Models;
 
-namespace Mini_E_Commerce_Project.DTO.GetDTO
+namespace Mini_E_Commerce_Project.DTO.GetDTO.AdminAccessedDTO
 {
-    public record GetOrderDetailDTO
+    public record GetOrderDetailDTOAdmin
     {
         public int OrderId { get; set; }
-        public List<Order>? Orders { get; set; }
+        public string OrderName { get; set; } = null!;
         public int ProductId { get; set; }
-        public List<Product>? Products { get; set; }
+        public string ProductName { get; set; } = null!;
         public int Quantity { get; set; }
         public decimal PricePerItem { get; set; }
     }

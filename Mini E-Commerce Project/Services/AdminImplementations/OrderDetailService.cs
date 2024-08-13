@@ -1,10 +1,10 @@
-﻿using Mini_E_Commerce_Project.DTO.GetDTO;
+﻿using Mini_E_Commerce_Project.DTO.GetDTO.UserAccessedDTO;
 using Mini_E_Commerce_Project.DTO.InsertDTO;
 using Mini_E_Commerce_Project.DTO.ServiceDTO;
 using Mini_E_Commerce_Project.Models;
-using Mini_E_Commerce_Project.Services.Interfaces;
+using Mini_E_Commerce_Project.Services.AdminInterfaces;
 
-namespace Mini_E_Commerce_Project.Services.Implementations
+namespace Mini_E_Commerce_Project.Services.AdminImplementations
 {
     internal class OrderDetailService : IOrderDetailService
     {
