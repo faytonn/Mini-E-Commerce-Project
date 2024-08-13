@@ -41,19 +41,41 @@ namespace Mini_E_Commerce_Project.Services.Implementations
                     FullName = user.FullName,
                     Email = user.Email,
                     Address = user.Address,
-
                 };
             }
+                return userDTOs;
         }
 
-        public Task<GetUserDTO> GetUserByIdAsync(int id)
+        public async Task<GetUserDTO> GetUserByIdAsync(int id)
         {
-           
+            var user = await _userRepository.GetSingleAsync(u => u.Id == id);
+
+            if (user == null)
+            {
+                throw new NotFoundException("User not found.");
+            }
+
+            return new GetUserDTO
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                Address = user.Address,
+            };
+
         }
 
-        public Task UpdateUserAsync(InsertUserDTO userDto)
+        public async Task UpdateUserAsync(InsertUserDTO updateUser)
         {
+            var user = await _userRepository.GetSingleAsync(u => u.Id == updateUser.Id);
 
+            if (user is null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            _userRepository.Delete(user);
+            await _userRepository.SaveChangesAsync();
         }
     }
 }

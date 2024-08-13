@@ -9,6 +9,6 @@ namespace Mini_E_Commerce_Project.Services.Interfaces
     {
         Task RegisterAsync(CreateUserDTO registerUser);
         Task LoginAsync (User loginUser);
-        Task UpdateUserAsync(InsertUserDTO userDto);
+        Task UpdateUserAsync(InsertUserDTO updateUser);
     }
 }

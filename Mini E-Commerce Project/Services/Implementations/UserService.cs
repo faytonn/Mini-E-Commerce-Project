@@ -73,5 +73,29 @@ namespace Mini_E_Commerce_Project.Services.Implementations
             await _userRepository.SaveChangesAsync();
 
         }
+
+        
+
+        public async Task UpdateUserAsync(InsertUserDTO updateUser)
+        {
+            var user = await _userRepository.GetSingleAsync(u => u.Id == updateUser.Id);
+
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            User updatedUser = new()
+            {
+                FullName = updateUser.FullName,
+                Email = updateUser.Email,
+                Address = updateUser.Address
+
+            };
+
+             _userRepository.Update(user);
+            await _userRepository.SaveChangesAsync();
+
+        }
     }
 }
