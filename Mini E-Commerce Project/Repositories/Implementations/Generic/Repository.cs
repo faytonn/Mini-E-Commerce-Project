@@ -35,6 +35,8 @@ namespace Mini_E_Commerce_Project.Repositories.Implementations.Generic
                 query = query.Include(include);
             }
 
+
+
             var result = await query.ToListAsync(); //listing them all up
 
             return result;

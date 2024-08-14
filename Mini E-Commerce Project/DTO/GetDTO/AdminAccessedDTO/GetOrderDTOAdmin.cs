@@ -5,6 +5,7 @@ namespace Mini_E_Commerce_Project.DTO.GetDTO.AdminAccessedDTO
 {
     public record GetOrderDTOAdmin
     {
+        public int Id { get; set; }
         public int UserId { get; set; }
         public string UsersName { get; set; } = null!;
         public DateTime OrderDate { get; set; }

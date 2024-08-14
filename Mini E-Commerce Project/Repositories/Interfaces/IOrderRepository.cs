@@ -3,7 +3,7 @@ using Mini_E_Commerce_Project.Repositories.Interfaces.Generic;
 
 namespace Mini_E_Commerce_Project.Repositories.Interfaces
 {
-    public interface IOrderdetailRepository : IRepository<Order>
+    public interface IOrderRepository : IRepository<Order>
     {
     }
 }

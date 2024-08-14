@@ -1,16 +1,18 @@
-﻿using Mini_E_Commerce_Project.DTO.GetDTO.UserAccessedDTO;
+﻿using Mini_E_Commerce_Project.DTO.GetDTO.AdminAccessedDTO;
+using Mini_E_Commerce_Project.DTO.GetDTO.UserAccessedDTO;
 using Mini_E_Commerce_Project.DTO.InsertDTO;
+using Mini_E_Commerce_Project.DTO.MiscellaneousDTO;
 using Mini_E_Commerce_Project.DTO.ServiceDTO;
 using Mini_E_Commerce_Project.Enums;
 using Mini_E_Commerce_Project.Exceptions;
 using Mini_E_Commerce_Project.Models;
 using Mini_E_Commerce_Project.Repositories.Implementations;
 using Mini_E_Commerce_Project.Repositories.Interfaces;
-using Mini_E_Commerce_Project.Services.AdminInterfaces;
+using Mini_E_Commerce_Project.Services.ADMIN.AdminInterfaces;
 using UnauthorizedAccessException = System.UnauthorizedAccessException;
 
 
-namespace Mini_E_Commerce_Project.Services.AdminImplementations
+namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
 {
     public class AdminService : IAdminService
     {
@@ -48,7 +50,7 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
 
         }
 
-        public async Task<List<GetUserDTO>> GetAllUsersAsync(User currentUser)
+        public async Task<List<GetUserDTOAdmin>> GetAllUsersAsync(User currentUser)
         {
             if (!currentUser.isAdmin)
             {
@@ -56,7 +58,7 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             }
 
             var users = await _userRepository.GetAllAsync();
-            var userDTOs = new List<GetUserDTO>();
+            var userDTOs = new List<GetUserDTOAdmin>();
 
             foreach (var user in users)
             {
@@ -72,7 +74,7 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             return userDTOs;
         }
 
-        public async Task<GetUserDTO> GetUserByIdAsync(int id, User currentUser)
+        public async Task<GetUserDTOAdmin> GetUserByIdAsync(int id, User currentUser)
         {
             if (!currentUser.isAdmin)
             {
@@ -86,13 +88,13 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
                 throw new NotFoundException("User not found.");
             }
 
-            return new GetUserDTO
+            return new GetUserDTOAdmin
             {
                 Id = user.Id,
                 FullName = user.FullName,
                 Email = user.Email,
                 Address = user.Address,
-
+                isAdmin =user.isAdmin
             };
 
         }
@@ -132,9 +134,7 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
                 Name = createProductDTO.Name,
                 Price = createProductDTO.Price,
                 Stock = createProductDTO.Stock,
-                Description = createProductDTO.Description,
-                CreatedDate = DateTime.UtcNow,
-                UpdatedDate = DateTime.UtcNow,
+                Description = createProductDTO.Description
             };
 
             await _productRepository.CreateAsync(product);
@@ -192,7 +192,7 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             await _productRepository.SaveChangesAsync();
         }
 
-        public async Task<GetProductDTO> GetProductByIdAsync(int id, User currentUser)
+        public async Task<GetProductDTOAdmin> GetProductByIdAsync(int id, User currentUser)
         {
             if (!currentUser.isAdmin)
             {
@@ -206,17 +206,19 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
                 throw new NotFoundException("Product not found.");
             }
 
-            return new GetProductDTO
+            return new GetProductDTOAdmin
             {
                 Id = product.Id,
                 Name = product.Name,
                 Price = product.Price,
                 Stock = product.Stock,
                 Description = product.Description,
+                CreatedDate = product.CreatedDate,
+                UpdatedDate = product.UpdatedDate,
             };
         }
 
-        public async Task<List<GetProductDTO>> GetAllProductsAsync(User currentUser)
+        public async Task<List<GetProductDTOAdmin>> GetAllProductsAsync(User currentUser)
         {
             if (!currentUser.isAdmin)
             {
@@ -224,17 +226,19 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             }
 
             var products = await _productRepository.GetAllAsync();
-            var productDTOs = new List<GetProductDTO>();
+            var productDTOs = new List<GetProductDTOAdmin>();
 
             foreach (var product in products)
             {
-                productDTOs.Add(new GetProductDTO
+                productDTOs.Add(new GetProductDTOAdmin
                 {
                     Id = product.Id,
                     Name = product.Name,
                     Price = product.Price,
                     Stock = product.Stock,
                     Description = product.Description,
+                    CreatedDate = product.CreatedDate,
+                    UpdatedDate = product.UpdatedDate,
                 });
             }
 
@@ -242,7 +246,7 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
         }
 
         // ORDER MANAGEMENT
-        public async Task<List<GetOrderDTO>> GetAllOrdersAsync(User currentUser)
+        public async Task<List<GetOrderDTOAdmin>> GetAllOrdersAsync(User currentUser)
         {
             if (!currentUser.isAdmin)
             {
@@ -250,24 +254,26 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             }
 
             var orders = await _orderRepository.GetAllAsync();
-            var orderDTOs = new List<GetOrderDTO>();
+            var orderDTOs = new List<GetOrderDTOAdmin>();
 
             foreach (var order in orders)
             {
-                orderDTOs.Add(new GetOrderDTO
+                orderDTOs.Add(new GetOrderDTOAdmin
                 {
                     Id = order.Id,
                     UserId = order.UserId,
+                    UsersName = order.Users.FullName,
                     OrderDate = order.OrderDate,
                     TotalAmount = order.TotalAmount,
                     Status = order.Status,
-                });
+                    OrderDetails = order.OrderDetails,
+                }); ;
             }
 
             return orderDTOs;
         }
 
-        public async Task<GetOrderDTO> GetOrderByIdAsync(int id, User currentUser)
+        public async Task<GetOrderDTOAdmin> GetOrderByIdAsync(int id, User currentUser)
         {
             if (!currentUser.isAdmin)
             {
@@ -281,13 +287,15 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
                 throw new NotFoundException("Order not found.");
             }
 
-            return new GetOrderDTO
+            return new GetOrderDTOAdmin
             {
                 Id = order.Id,
                 UserId = order.UserId,
+                UsersName = order.UsersName,
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
                 Status = order.Status,
+                OrderDetails = order.OrderDetails
             };
         }
 
@@ -334,6 +342,106 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             await _orderRepository.SaveChangesAsync();
 
             return order;
+        }
+        public async Task CompleteOrderAsync(int orderId, User currentUser)
+        {
+            if (!currentUser.isAdmin)
+            {
+                throw new UnauthorizedAccessException("Only admins can complete orders.");
+            }
+
+            var order = await _orderRepository.GetSingleAsync(o => o.Id == orderId);
+
+            if (order == null)
+            {
+                throw new NotFoundException("Order not found.");
+            }
+
+            if (order.Status == StatusEnum.Completed)
+            {
+                throw new InvalidOperationException("Order is already completed.");
+            }
+
+            order.Status = StatusEnum.Completed;
+            _orderRepository.Update(order);
+            await _orderRepository.SaveChangesAsync();
+        }
+
+        public async Task AddOrderDetailAsync(CreateOrderDetailDTO addOrderDetailDTO, User currentUser)
+        {
+            if (!currentUser.isAdmin)
+            {
+                throw new UnauthorizedAccessException("Only admins can add order details.");
+            }
+
+            var order = await _orderRepository.GetSingleAsync(o => o.Id == addOrderDetailDTO.OrderId);
+            if (order == null)
+            {
+                throw new NotFoundException("Order not found.");
+            }
+
+            if (addOrderDetailDTO.Quantity < 0 || addOrderDetailDTO.PricePerItem < 0)
+            {
+                throw new InvalidOrderDetailException("Quantity or price cannot be negative.");
+            }
+
+            var product = await _productRepository.GetSingleAsync(p => p.Id == addOrderDetailDTO.ProductId);
+            if (product == null)
+            {
+                throw new NotFoundException("Product not found.");
+            }
+
+            var orderDetail = new OrderDetail
+            {
+                OrderId = addOrderDetailDTO.OrderId,
+                ProductId = addOrderDetailDTO.ProductId,
+                Quantity = addOrderDetailDTO.Quantity,
+                PricePerItem = addOrderDetailDTO.PricePerItem
+            };
+
+            await _orderDetailRepository.CreateAsync(orderDetail);
+            await _orderDetailRepository.SaveChangesAsync();
+        }
+
+        public async Task<List<GetOrderDetailDTOAdmin>> GetOrderDetailsByOrderIdAsync(int orderId, User currentUser)
+        {
+            if (!currentUser.isAdmin)
+            {
+                throw new UnauthorizedAccessException("Only admins can view order details.");
+            }
+
+            var order = await _orderRepository.GetSingleAsync(o => o.Id == orderId);
+            if (order == null)
+            {
+                throw new NotFoundException("Order not found.");
+            }
+
+            var allOrderDetails = await _orderDetailRepository.GetAllAsync();
+
+            var orderDetails = new List<OrderDetail>();
+            foreach (var detail in allOrderDetails)
+            {
+                if (detail.OrderId == orderId)
+                {
+                    orderDetails.Add(detail);
+                }
+            }
+
+            var orderDetailDTOs = new List<GetOrderDetailDTOAdmin>();
+            foreach (var detail in orderDetails)
+            {
+                var dto = new GetOrderDetailDTOAdmin
+                {
+                    OrderId = detail.OrderId,
+                    ProductId = detail.ProductId,
+                    Quantity = detail.Quantity,
+                    PricePerItem = detail.PricePerItem,
+                     
+                };
+                orderDetailDTOs.Add(dto);
+            }
+
+            return orderDetailDTOs;
         }
 
         // ORDER DETAIL MANAGEMENT
@@ -408,7 +516,60 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
 
             return orderDetail;
         }
-    }
 
+        //PAYMENT MANAGEMENT
+        
+       
+
+        public async Task<List<GetPaymentDTO>> GetAllPayments()
+        {
+            var payments = await _paymentRepository.GetAllAsync();
+            var paymentDTOs = new List<GetPaymentDTO>();
+
+
+            foreach (var payment in payments)
+            {
+                // Create a new DTO for the current payment
+                var dto = new GetPaymentDTO
+                {
+                    OrderId = payment.OrderId,
+                    Amount = payment.Amount,
+                    PaymentDate = payment.PaymentDate
+                };
+
+                // Add the DTO to the list
+                paymentDTOs.Add(dto);
+            }
+            return paymentDTOs;
+        }
+
+
+        public async Task RefundPaymentAsync(int paymentId, decimal refundAmount, User currentUser)
+        {
+            if (!currentUser.isAdmin)
+            {
+                throw new UnauthorizedAccessException("Only admins can process refunds.");
+            }
+
+            var payment = await _paymentRepository.GetSingleAsync(p => p.Id == paymentId);
+            if (payment == null)
+            {
+                throw new NotFoundException("Payment not found.");
+            }
+
+            if (refundAmount <= 0 || refundAmount > payment.Amount)
+            {
+                throw new InvalidPaymentException("Invalid refund amount.");
+            }
+
+            
+            payment.Amount -= refundAmount;
+           
+            _paymentRepository.Update(payment);
+            await _paymentRepository.SaveChangesAsync();
+        }
+    }
 }
-}
+
+
+

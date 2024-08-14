@@ -6,9 +6,6 @@ namespace Mini_E_Commerce_Project.Services.AdminInterfaces
 {
     public interface IProductService
     {
-        Task CreateProduct(CreateProductDTO newProduct);
-        Task UpdateProduct(int id, InsertProductDTO updatedProduct);
-        Task DeleteProduct(int id);
         Task<List<GetProductDTO>> GetProducts();
         Task<GetProductDTO> GetProductById(int id);
     }
