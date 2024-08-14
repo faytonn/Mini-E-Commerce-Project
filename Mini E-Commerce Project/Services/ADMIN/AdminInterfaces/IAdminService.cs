@@ -33,12 +33,12 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminInterfaces
         Task<List<GetOrderDetailDTOAdmin>> GetOrderDetailsByOrderIdAsync(int orderId, User currentUser);
 
         // ORDER DETAIL MANAGAMENT
-        Task<GetOrderDetailDTOAdmin> GetOrderDetailByIdAsync(int id, User currentUser);
+        Task<GetOrderDetailDTO> GetOrderDetailByIdAsync(int id, User currentUser);
         Task<InsertOrderDetailDTO> UpdateOrderDetailByIdAsync(InsertOrderDetailDTO updateOrderDetailDTO, User currentUser);
         Task<OrderDetail> DeleteOrderDetailAsync(int id, User currentUser);
 
         // PAYMENT MANAGEMENT
-        Task<List<GetPaymentDTOAdmin>> GetAllPaymentsAsync(User currentUser);
+        Task<List<GetPaymentDTOAdmin>> GetAllPayments();
         Task RefundPaymentAsync(int paymentId, decimal refundAmount, User currentUser);
 
 

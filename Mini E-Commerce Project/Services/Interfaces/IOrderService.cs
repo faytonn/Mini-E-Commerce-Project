@@ -13,7 +13,7 @@ namespace Mini_E_Commerce_Project.Services.AdminInterfaces
     public interface IOrderService
     {
         Task<Order> CreateOrderAsync(CreateOrderDTO orderDTO, User currentUser);
-        Task<List<Order>> GetAllOrdersAsync();
+        Task<List<Order>> GetUserOrdersAsync();
         Task<GetOrderDTO> GetOrderByIdAsync(int id);
         Task CancelOrderAsync(int orderId, User currentUser);
     }

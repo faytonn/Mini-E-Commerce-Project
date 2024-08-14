@@ -110,7 +110,7 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             return orderDTOs;
         }
 
-        public async Task<List<GetOrderDetailDTO>> GetOrderDetailsByOrderIdAsync(int orderId)
+        public async Task<List<GetOrderDetailDTO>> GetOrderByIdAsync(int orderId)
         {
             var order = await _orderRepository.GetSingleAsync(o => o.Id == orderId);
             if (order == null)

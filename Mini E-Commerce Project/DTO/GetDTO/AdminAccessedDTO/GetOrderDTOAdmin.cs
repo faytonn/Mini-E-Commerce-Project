@@ -11,7 +11,7 @@ namespace Mini_E_Commerce_Project.DTO.GetDTO.AdminAccessedDTO
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
         public StatusEnum Status { get; set; }
-        public List<GetOrderDetailDTOAdmin>? OrderDetails { get; set; }
+        public List<OrderDetail>? OrderDetails { get; set; }
 
     }
 }

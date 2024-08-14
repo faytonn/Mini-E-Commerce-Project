@@ -1,15 +1,14 @@
 ﻿using Mini_E_Commerce_Project.DTO.GetDTO.AdminAccessedDTO;
 using Mini_E_Commerce_Project.DTO.GetDTO.UserAccessedDTO;
 using Mini_E_Commerce_Project.DTO.InsertDTO;
-using Mini_E_Commerce_Project.DTO.MiscellaneousDTO;
 using Mini_E_Commerce_Project.DTO.ServiceDTO;
+using Mini_E_Commerce_Project.Models;
 using Mini_E_Commerce_Project.Enums;
 using Mini_E_Commerce_Project.Exceptions;
-using Mini_E_Commerce_Project.Models;
 using Mini_E_Commerce_Project.Repositories.Implementations;
 using Mini_E_Commerce_Project.Repositories.Interfaces;
 using Mini_E_Commerce_Project.Services.ADMIN.AdminInterfaces;
-using UnauthorizedAccessException = System.UnauthorizedAccessException;
+
 
 
 namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
@@ -35,7 +34,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can delete users");
+                throw new UnAuthorizedAccessException("Only admins can delete users");
             }
 
             var user = await _userRepository.GetSingleAsync(u => u.Id == id);
@@ -54,7 +53,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can delete users");
+                throw new UnAuthorizedAccessException("Only admins can delete users");
             }
 
             var users = await _userRepository.GetAllAsync();
@@ -78,7 +77,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can delete users");
+                throw new UnAuthorizedAccessException("Only admins can delete users");
             }
 
             var user = await _userRepository.GetSingleAsync(u => u.Id == id);
@@ -103,7 +102,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can delete users");
+                throw new UnAuthorizedAccessException("Only admins can delete users");
             }
             var user = await _userRepository.GetSingleAsync(u => u.Id == updateUser.Id);
 
@@ -120,7 +119,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var doesExist = await _productRepository.ExistsAsync(p => p.Name == createProductDTO.Name);
@@ -147,7 +146,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var product = await _productRepository.GetSingleAsync(p => p.Id == updateProductDTO.Id);
@@ -178,7 +177,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var product = await _productRepository.GetSingleAsync(p => p.Id == id);
@@ -196,7 +195,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var product = await _productRepository.GetSingleAsync(p => p.Id == id);
@@ -222,7 +221,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var products = await _productRepository.GetAllAsync();
@@ -250,7 +249,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var orders = await _orderRepository.GetAllAsync();
@@ -277,7 +276,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var order = await _orderRepository.GetSingleAsync(o => o.Id == id);
@@ -291,7 +290,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
             {
                 Id = order.Id,
                 UserId = order.UserId,
-                UsersName = order.UsersName,
+                UsersName = order.Users.FullName,
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
                 Status = order.Status,
@@ -303,7 +302,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var order = await _orderRepository.GetSingleAsync(o => o.Id == orderId);
@@ -328,7 +327,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var order = await _orderRepository.GetSingleAsync(o => o.Id == orderId);
@@ -347,7 +346,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can complete orders.");
+                throw new UnAuthorizedAccessException("Only admins can complete orders.");
             }
 
             var order = await _orderRepository.GetSingleAsync(o => o.Id == orderId);
@@ -371,7 +370,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can add order details.");
+                throw new UnAuthorizedAccessException("Only admins can add order details.");
             }
 
             var order = await _orderRepository.GetSingleAsync(o => o.Id == addOrderDetailDTO.OrderId);
@@ -407,7 +406,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can view order details.");
+                throw new UnAuthorizedAccessException("Only admins can view order details.");
             }
 
             var order = await _orderRepository.GetSingleAsync(o => o.Id == orderId);
@@ -449,7 +448,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var orderDetail = await _orderDetailRepository.GetSingleAsync(od => od.Id == id);
@@ -473,7 +472,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var orderDetail = await _orderDetailRepository.GetSingleAsync(od => od.Id == updateOrderDetailDTO.Id);
@@ -501,7 +500,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can create products.");
+                throw new UnAuthorizedAccessException("Only admins can create products.");
             }
 
             var orderDetail = await _orderDetailRepository.GetSingleAsync(od => od.Id == id);
@@ -517,27 +516,26 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
             return orderDetail;
         }
 
-        //PAYMENT MANAGEMENT
         
        
+        //PAYMENT MANAGEMENT
 
-        public async Task<List<GetPaymentDTO>> GetAllPayments()
+        public async Task<List<GetPaymentDTOAdmin>> GetAllPayments()
         {
             var payments = await _paymentRepository.GetAllAsync();
-            var paymentDTOs = new List<GetPaymentDTO>();
+            var paymentDTOs = new List<GetPaymentDTOAdmin>();
 
 
             foreach (var payment in payments)
             {
-                // Create a new DTO for the current payment
-                var dto = new GetPaymentDTO
+
+                GetPaymentDTOAdmin dto = new GetPaymentDTOAdmin
                 {
                     OrderId = payment.OrderId,
                     Amount = payment.Amount,
                     PaymentDate = payment.PaymentDate
                 };
 
-                // Add the DTO to the list
                 paymentDTOs.Add(dto);
             }
             return paymentDTOs;
@@ -548,7 +546,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminImplementations
         {
             if (!currentUser.isAdmin)
             {
-                throw new UnauthorizedAccessException("Only admins can process refunds.");
+                throw new UnAuthorizedAccessException("Only admins can process refunds.");
             }
 
             var payment = await _paymentRepository.GetSingleAsync(p => p.Id == paymentId);

@@ -1,10 +1,9 @@
-﻿namespace Mini_E_Commerce_Project.Exceptions
+﻿namespace Mini_E_Commerce_Project.Exceptions;
+
+public class UnAuthorizedAccessException : Exception
 {
-    public class UnauthorizedAccessException : Exception
+    public UnAuthorizedAccessException(string message) : base(message)
     {
-        public UnauthorizedAccessException(string message) : base(message)
-        {
-            
-        }
+        
     }
 }
