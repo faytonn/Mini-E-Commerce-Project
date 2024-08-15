@@ -37,6 +37,7 @@ namespace Mini_E_Commerce_Project.Services.Implementations
                 Email = registerUser.Email,
                 Password = registerUser.Password,
                 Address = registerUser.Address,
+                isAdmin=registerUser.isAdmin
             };
             await _userRepository.CreateAsync(user);
             await _userRepository.SaveChangesAsync();

@@ -6,7 +6,7 @@ namespace Mini_E_Commerce_Project.Repositories.Interfaces.Generic
     public interface IRepository<T> where T : BaseEntity
     {
         Task<List<T>> GetAllAsync(params string[] includes);
-        Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate, params string[] includes);
+        Task<T?> GetSingleAsync(Expression<Func<T, bool>> predicate, params string[] includes);
         Task<T> GetByIdAsync(int id);
         Task CreateAsync(T entity);
         void Update(T entity);

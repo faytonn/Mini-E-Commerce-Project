@@ -36,7 +36,7 @@ namespace Mini_E_Commerce_Project.Utilities.Validations
                 }
 
             }
-            throw new InvalidPassword("Password should contain uppercase & lowercase letters and digits. Length of password should minimum be 8 characters.");
+            throw new InvalidPasswordException("Password should contain uppercase & lowercase letters and digits. Length of password should minimum be 8 characters.");
         }
 
         public static bool ValidFullName(string fullName)

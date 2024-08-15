@@ -6,5 +6,6 @@ namespace Mini_E_Commerce_Project.Repositories.Implementations
 {
     public class PaymentRepository : Repository<Payment>, IPaymentRepository
     {
+
     }
 }

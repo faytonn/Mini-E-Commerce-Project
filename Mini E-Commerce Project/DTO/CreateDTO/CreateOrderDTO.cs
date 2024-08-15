@@ -7,5 +7,6 @@ namespace Mini_E_Commerce_Project.DTO.ServiceDTO
         public int UserId { get; set; }
         public decimal TotalAmount { get; set; }
         public StatusEnum Status { get; set; }
+        public List<CreateOrderDetailDTO> OrderDetails { get; set; }
     }
 }

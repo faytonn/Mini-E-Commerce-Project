@@ -26,30 +26,41 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             _orderRepository = new OrderRepository();
             _userRepository = new UserRepository();
         }
-        public async Task CreatePaymentAsync(CreatePaymentDTO paymentDTO)
+        public async Task CreatePaymentAsync(CreatePaymentDTO paymentDTO, int userId)
         {
-            if (paymentDTO.Amount <= 0)
-            {
-                throw new InvalidPaymentException("Amount should be greater than zero.");
-            }
 
-            var order = await _orderRepository.GetSingleAsync(o => o.Id == paymentDTO.OrderId && o.UserId == currentUser.Id);
-            if (order == null)
-            {
-                throw new NotFoundException("Order not found.");
-            }
+            var order = await _orderRepository.GetSingleAsync(x => x.UserId == userId && x.Status == Enums.StatusEnum.Pending, "OrderDetails.Product", "User");
 
+
+            if (order is null)
+                throw new NotFoundException("Order is not found");
+
+            if (order.OrderDetails.Count == 0)
+                throw new NotFoundException("Order is empty");
+
+            //if ( <= 0)
+            //{
+            //    throw new InvalidPaymentException("Amount should be greater than zero.");
+            //}
             if (paymentDTO.Amount != order.TotalAmount)
             {
                 throw new InvalidPaymentException("Payment amount does not match order total.");
             }
 
-            var payment = new Payment
+            decimal totalCount = 0;
+
+
+            order.OrderDetails.ForEach(x => totalCount +=x.Quantity* x.Product.Price);
+
+
+            Payment payment = new()
             {
-                OrderId = paymentDTO.OrderId,
-                Amount = paymentDTO.Amount,
-                PaymentDate = DateTime.UtcNow
+                Amount = totalCount,
+                OrderId = order.Id,
+                PaymentDate = DateTime.Now,
+
             };
+
 
             await _paymentRepository.CreateAsync(payment);
             await _paymentRepository.SaveChangesAsync();

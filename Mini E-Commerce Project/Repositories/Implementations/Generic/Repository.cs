@@ -65,7 +65,7 @@ namespace Mini_E_Commerce_Project.Repositories.Implementations.Generic
             return result;
         }
 
-        public async Task<T>? GetSingleAsync(Expression<Func<T, bool>> predicate, params string[] includes)
+        public async Task<T?> GetSingleAsync(Expression<Func<T, bool>> predicate, params string[] includes)
         {
             var query = _context.Set<T>().AsQueryable();
             foreach (var include in includes)

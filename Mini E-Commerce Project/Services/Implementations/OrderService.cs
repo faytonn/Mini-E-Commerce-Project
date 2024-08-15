@@ -6,11 +6,6 @@ using Mini_E_Commerce_Project.Models;
 using Mini_E_Commerce_Project.Repositories.Implementations;
 using Mini_E_Commerce_Project.Repositories.Interfaces;
 using Mini_E_Commerce_Project.Services.AdminInterfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mini_E_Commerce_Project.Services.AdminImplementations
 {
@@ -56,6 +51,31 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             await _orderRepository.CreateAsync(order);
             await _orderRepository.SaveChangesAsync();
 
+            foreach(var detail in createOrderDTO.OrderDetails)
+            {
+                if(detail.Quantity < 0 || detail.PricePerItem < 0)
+                {
+                    throw new InvalidOrderDetailException("Quantity or price cannot be negative.");
+                }
+
+                var product = await _productRepository.GetSingleAsync(p => p.Id == detail.ProductId);
+                if(product == null)
+                {
+                    throw new NotFoundException("Product not found.");
+                }
+
+                var orderDetail = new OrderDetail
+                {
+                    OrderId = detail.OrderId,
+                    ProductId = detail.ProductId,
+                    Quantity = detail.Quantity,
+                    PricePerItem = detail.PricePerItem,
+                };
+
+                await _orderDetailRepository.CreateAsync(orderDetail);
+            }
+
+            await _orderDetailRepository.SaveChangesAsync();
             return order;
         }
 
@@ -126,6 +146,7 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
                 PricePerItem = od.PricePerItem,
             }).ToList();
         }
+
     }
 }
 

@@ -1,7 +1,6 @@
 ﻿using Mini_E_Commerce_Project.DTO.GetDTO.AdminAccessedDTO;
 using Mini_E_Commerce_Project.DTO.GetDTO.UserAccessedDTO;
 using Mini_E_Commerce_Project.DTO.InsertDTO;
-using Mini_E_Commerce_Project.DTO.MiscellaneousDTO;
 using Mini_E_Commerce_Project.DTO.ServiceDTO;
 using Mini_E_Commerce_Project.Enums;
 using Mini_E_Commerce_Project.Models;
@@ -14,7 +13,6 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminInterfaces
         Task<List<GetUserDTOAdmin>> GetAllUsersAsync(User currentUser);
         Task<GetUserDTOAdmin> GetUserByIdAsync(int id, User currentUser);
         Task DeleteUserAsync(int id, User currentUser);
-        Task UpdateUserAsync(InsertUserDTO userDto, User currentUser);
 
         // PRODUCT MANAGEMENT
         Task<Product> CreateProductAsync(CreateProductDTO createProductDTO, User currentUser);
@@ -28,8 +26,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminInterfaces
         Task<List<GetOrderDTOAdmin>> GetAllOrdersAsync(User currentUser);
         Task<GetOrderDTOAdmin> GetOrderByIdAsync(int id, User currentUser);
         Task<InsertOrderDTO> UpdateOrderStatusAsync(int orderId, StatusEnum orderStatus, User currentUser);
-        Task<Order> DeleteOrderAsync(int orderId, User currentUser);
-        Task AddOrderDetailAsync(CreateOrderDetailDTO addOrderDetailDTO, User currentUser);
+        Task DeleteOrderAsync(int orderId, User currentUser);
         Task<List<GetOrderDetailDTOAdmin>> GetOrderDetailsByOrderIdAsync(int orderId, User currentUser);
 
         // ORDER DETAIL MANAGAMENT

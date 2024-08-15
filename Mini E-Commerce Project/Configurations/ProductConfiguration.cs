@@ -15,10 +15,10 @@ namespace Mini_E_Commerce_Project.Configurations
             builder.Property(pr => pr.Stock).IsRequired(true);
             builder.Property(pr => pr.Description).IsRequired(true).HasMaxLength(200);
             builder.Property(pr => pr.CreatedDate).IsRequired(true);
-            builder.Property(pr => pr.UpdatedDate).IsRequired(true);
+            builder.Property(pr => pr.UpdatedDate);
 
             builder.HasCheckConstraint("CK_Price", "Price > 0");
-            builder.HasCheckConstraint("CK_StockCount", "StockCount >= 0");
+            builder.HasCheckConstraint("CK_Stock", "Stock >= 0");
 
         }
     }

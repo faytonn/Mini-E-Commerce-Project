@@ -5,7 +5,8 @@ namespace Mini_E_Commerce_Project.Repositories.Interfaces
 {
     public interface IPaymentRepository : IRepository<Payment>
     {
-        Task CreateAsync(Payment payment);
-        Task CreateRefundAsync(Refund refund);
-        Task SaveChangesAsync();
+        //Task CreateAsync(Payment payment);
+        //Task CreateRefundAsync();
+        //Task SaveChangesAsync();
     }
+}

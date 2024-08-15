@@ -6,7 +6,7 @@ namespace Mini_E_Commerce_Project.Services.AdminInterfaces
 {
     public interface IPaymentService
     {
-        Task CreatePaymentAsync(CreatePaymentDTO paymentDTO);
+        Task CreatePaymentAsync(CreatePaymentDTO paymentDTO, int userId);
         Task<GetPaymentDTO> GetPaymentByIdAsync(int id);
 
     }

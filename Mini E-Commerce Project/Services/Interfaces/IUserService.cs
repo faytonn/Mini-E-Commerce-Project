@@ -8,7 +8,7 @@ namespace Mini_E_Commerce_Project.Services.Interfaces
     public interface IUserService
     {
         Task RegisterAsync(CreateUserDTO registerUser);
-        Task LoginAsync (User loginUser);
+        Task<User> LoginAsync (User loginUser);
         Task UpdateUserAsync(InsertUserDTO updateUser);
     }
 }
