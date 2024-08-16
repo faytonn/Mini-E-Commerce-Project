@@ -15,6 +15,7 @@ namespace Mini_E_Commerce_Project.Configurations
             builder.HasIndex(u =>u.Email).IsUnique();
             builder.Property(u => u.Password).IsRequired(true);
             builder.Property(u => u.Address).IsRequired(true).HasMaxLength(250);
+            builder.Property(u => u.Balance).HasDefaultValue(10000);
 
             //builder.HasCheckConstraint("CK_Email")
         }

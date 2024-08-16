@@ -39,6 +39,8 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             {
                 throw new InvalidOrderException("Order amount must be greater than zero.");
             }
+            if (user.Balance < createOrderDTO.TotalAmount)
+                throw new InvalidOrderException("Insufficient balance to complete the order.");
 
             var order = new Order
             {
@@ -51,15 +53,15 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             await _orderRepository.CreateAsync(order);
             await _orderRepository.SaveChangesAsync();
 
-            foreach(var detail in createOrderDTO.OrderDetails)
+            foreach (var detail in createOrderDTO.OrderDetails)
             {
-                if(detail.Quantity < 0 || detail.PricePerItem < 0)
+                if (detail.Quantity < 0 || detail.PricePerItem < 0)
                 {
                     throw new InvalidOrderDetailException("Quantity or price cannot be negative.");
                 }
 
                 var product = await _productRepository.GetSingleAsync(p => p.Id == detail.ProductId);
-                if(product == null)
+                if (product == null)
                 {
                     throw new NotFoundException("Product not found.");
                 }
@@ -76,6 +78,11 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             }
 
             await _orderDetailRepository.SaveChangesAsync();
+
+            user.Balance -= createOrderDTO.TotalAmount;
+            _userRepository.Update(user);
+            await _userRepository.SaveChangesAsync();
+
             return order;
         }
 
@@ -130,21 +137,23 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             return orderDTOs;
         }
 
-        public async Task<List<GetOrderDetailDTO>> GetOrderByIdAsync(int orderId)
+        public async Task<GetOrderDTO> GetOrderByIdAsync(int orderId)
         {
+
             var order = await _orderRepository.GetSingleAsync(o => o.Id == orderId);
             if (order == null)
             {
                 throw new NotFoundException("Order is not found");
             }
 
-            return order.OrderDetails.Select(od => new GetOrderDetailDTO
+            return new GetOrderDTO()
             {
-                OrderId = od.OrderId,
-                ProductId = od.ProductId,
-                Quantity = od.Quantity,
-                PricePerItem = od.PricePerItem,
-            }).ToList();
+                Id = order.Id,
+                UserId = order.UserId,
+                TotalAmount = order.TotalAmount,
+                Status = order.Status
+            };
+
         }
 
     }

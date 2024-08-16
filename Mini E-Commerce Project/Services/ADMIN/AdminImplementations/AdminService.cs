@@ -70,7 +70,8 @@ public class AdminService : IAdminService
                 FullName = user.FullName,
                 Email = user.Email,
                 Address = user.Address,
-                isAdmin = user.isAdmin
+                isAdmin = user.isAdmin,
+                Balance = user.Balance,
             };
             userDTOs.Add(userDTO);
         }
@@ -471,7 +472,7 @@ public class AdminService : IAdminService
 
 
     //PAYMENT MANAGEMENT
-    public async Task<List<GetPaymentDTOAdmin>> GetAllPayments()
+    public async Task<List<GetPaymentDTOAdmin>> GetAllPayments(User currentUser)
     {
         var payments = await _paymentRepository.GetAllAsync();
         var paymentDTOs = new List<GetPaymentDTOAdmin>();
@@ -491,9 +492,7 @@ public class AdminService : IAdminService
         }
         return paymentDTOs;
     }
-
-
-    public async Task RefundPaymentAsync(int paymentId, decimal refundAmount, User currentUser)
+    public async Task RefundPaymentAsync(int paymentId, User currentUser)
     {
         if (!currentUser.isAdmin)
         {
@@ -506,17 +505,32 @@ public class AdminService : IAdminService
             throw new NotFoundException("Payment not found.");
         }
 
+        var refundAmount = payment.Amount;
         if (refundAmount <= 0 || refundAmount > payment.Amount)
         {
             throw new InvalidPaymentException("Invalid refund amount.");
         }
 
+        var order = await _orderRepository.GetSingleAsync(o => o.Id == payment.OrderId);
+        if (order is null)
+            throw new NotFoundException("Order not found.");
+
+        var user = await _userRepository.GetSingleAsync(u => u.Id == order.UserId);
+        if (user == null)
+            throw new NotFoundException("User not found.");
+
+        user.Balance += refundAmount;
+        _userRepository.Update(user);
 
         payment.Amount -= refundAmount;
-
         _paymentRepository.Update(payment);
+
         await _paymentRepository.SaveChangesAsync();
     }
+
+
+
+
 }
 
 

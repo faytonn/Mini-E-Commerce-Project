@@ -7,5 +7,6 @@
         public string Email { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string Address { get; set; } = null!;
+        public decimal Balance { get; set; }
     }
 }

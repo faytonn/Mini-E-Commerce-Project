@@ -1,4 +1,5 @@
 ﻿using Mini_E_Commerce_Project.DTO.GetDTO;
+using Mini_E_Commerce_Project.DTO.GetDTO.UserAccessedDTO;
 using Mini_E_Commerce_Project.DTO.InsertDTO;
 using Mini_E_Commerce_Project.DTO.ServiceDTO;
 using Mini_E_Commerce_Project.Exceptions;
@@ -37,7 +38,8 @@ namespace Mini_E_Commerce_Project.Services.Implementations
                 Email = registerUser.Email,
                 Password = registerUser.Password,
                 Address = registerUser.Address,
-                isAdmin=registerUser.isAdmin
+                isAdmin = registerUser.isAdmin,
+                Balance = 10000m
             };
             await _userRepository.CreateAsync(user);
             await _userRepository.SaveChangesAsync();
@@ -61,7 +63,7 @@ namespace Mini_E_Commerce_Project.Services.Implementations
             return user;
         }
 
-        public async Task UpdateUserAsync(InsertUserDTO updateUser)
+        public async Task UpdateUserAsync(InsertUserDTO updateUser, User currentUser)
         {
             var user = await _userRepository.GetSingleAsync(u => u.Id == updateUser.Id);
 
@@ -80,6 +82,26 @@ namespace Mini_E_Commerce_Project.Services.Implementations
 
              _userRepository.Update(user);
             await _userRepository.SaveChangesAsync();
+        }
+
+        public async Task<GetUserDTO> ViewProfileAsync(int userId)
+        {
+            var user = await _userRepository.GetSingleAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                throw new NotFoundException("User not found.");
+            }
+
+            return new GetUserDTO
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email,
+                Address = user.Address,
+                Balance = user.Balance,
+                isAdmin = user.isAdmin
+            };
         }
     }
 }

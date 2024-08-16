@@ -35,8 +35,8 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminInterfaces
         Task<OrderDetail> DeleteOrderDetailAsync(int id, User currentUser);
 
         // PAYMENT MANAGEMENT
-        Task<List<GetPaymentDTOAdmin>> GetAllPayments();
-        Task RefundPaymentAsync(int paymentId, decimal refundAmount, User currentUser);
+        Task<List<GetPaymentDTOAdmin>> GetAllPayments(User currentUser);
+        Task RefundPaymentAsync(int paymentId, User currentUser);
 
 
     }

@@ -7,8 +7,8 @@ namespace Mini_E_Commerce_Project.Services.AdminInterfaces
 {
     public interface IOrderDetailService
     {
-        Task<List<OrderDetail>> GetAllOrderDetailsAsync();
-        Task<GetOrderDetailDTO> GetOrderDetailByIdAsync(int id);
+        Task<List<GetOrderDetailDTO>> GetAllOrderDetailsAsync(int userId);
+        Task<GetOrderDetailDTO> GetOrderDetailByIdAsync(int id, int userId);
 
     }
 }

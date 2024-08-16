@@ -1,4 +1,5 @@
-﻿using Mini_E_Commerce_Project.Models;
+﻿using Mini_E_Commerce_Project.Enums;
+using Mini_E_Commerce_Project.Models;
 
 namespace Mini_E_Commerce_Project.DTO.GetDTO.UserAccessedDTO
 {
@@ -11,5 +12,6 @@ namespace Mini_E_Commerce_Project.DTO.GetDTO.UserAccessedDTO
         public List<Product>? Products { get; set; }
         public int Quantity { get; set; }
         public decimal PricePerItem { get; set; }
+        public StatusEnum Status { get; set; }
     }
 }

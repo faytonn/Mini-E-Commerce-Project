@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Drawing.Charts;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Mini_E_Commerce_Project.DTO.InsertDTO;
 using Mini_E_Commerce_Project.DTO.ServiceDTO;
 using Mini_E_Commerce_Project.Enums;
@@ -58,22 +60,32 @@ restartSystemMenu:
 
 
 
-//ExportUsersToExcelAsync<Payment>(payments, @"C:\Users\Fatima\OneDrive\Desktop\EXCEL E-COMMERCE.xlsx", "Payments");
-//static bool ExportUsersToExcelAsync<Payment>(List<Payment> payments, string filePath, string sheetName)
-//{
-//    bool exported = false;
+static bool ExportUsersToExcelAsync<Payment>(List<Payment> payments, string filePath, string sheetName)
+{
+    bool exported = false;
+    try
+    {
+        using (IXLWorkbook workbook = new XLWorkbook())
+        {
+            var worksheet = workbook.Worksheets.Add(sheetName);
+            worksheet.Cell(1, 1).Value = "Payment ID";
+            worksheet.Cell(1, 2).Value = "Order ID";
+            worksheet.Cell(1, 3).Value = "Amount";
+            worksheet.Cell(1, 4).Value = "Payment Date";
 
-//    using(IXLWorkbook workbook = new XLWorkbook())
-//    {
-//        workbook.AddWorksheet(sheetName).FirstCell().InsertTable<Payment>(payments, false);
+            workbook.SaveAs(filePath);
+            exported = true;
+            ExportUsersToExcelAsync<Payment>(payments, @"C:\Users\Fatima\OneDrive\Desktop\EXCEL E-COMMERCE.xlsx", "Payments");
+        }
+    }
+    catch
+    {
+        exported = false;
+    }
 
-//        workbook.SaveAs(filePath);
-//        exported = true;
-//    }
+    return exported;
 
-//    return exported;
-
-//}
+}
 
 static async Task CreateUser(IUserService userService)
 {
@@ -112,17 +124,17 @@ restartRegistrationProcess:
         string password = Console.ReadLine().Trim();
         UserValidations.ValidPassword(password);
 
-
         CreateUserDTO newUser = new CreateUserDTO
         {
             isAdmin = isAdmin,
             FullName = fullName,
             Address = address,
             Email = email,
-            Password = password
+            Password = password,
+            Balance = 10000m
         };
         await userService.RegisterAsync(newUser);
-        Colored.WriteLine($"Registration successful!\nHello, {fullName}!", ConsoleColor.Green);
+        Colored.WriteLine($"Registration successful!\nHello, {fullName}! Balance: {newUser.Balance}", ConsoleColor.Green);
 
     }
     catch (InvalidUserInformationException ex)
@@ -177,10 +189,10 @@ restartLoginProcess:
             await AdminMenu(adminService, loggedInUser);
 
         }
-        //else
-        //{
-        //   await UserMenu(userService, loggedInUser);
-        //}
+        else
+        {
+            await UserMenu(userService, orderService, orderDetailService, productService, paymentService, loggedInUser);
+        }
 
     }
     catch (InvalidUserInformationException ex)
@@ -242,7 +254,7 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                                 Colored.WriteLine("Here are all the users in the system:", ConsoleColor.DarkGray);
                                 foreach (var user in users)
                                 {
-                                    Console.WriteLine($"[{user.Id}] - {user.FullName} - {user.Email} - Admin?: {user.isAdmin}");
+                                    Console.WriteLine($"[{user.Id}] - {user.FullName} - {user.Email} - ${user.Balance} Admin?: {user.isAdmin}");
                                 }
                             }
                             catch (Exception ex)
@@ -499,14 +511,14 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                                     Colored.WriteLine("Invalid input.", ConsoleColor.Red);
                                     goto restartIdInput;
                                 }
-                                
-                                
+
+
 
                                 var product = await adminService.GetProductByIdAsync(productId, currentUser);
                                 Console.WriteLine($"[{product.Id}] - {product.Name} - ${product.Price} - Stock: {product.Stock}");
                                 Console.WriteLine($"{product.Description}");
                                 Console.WriteLine($"Created: {product.CreatedDate} | Updated: {product.UpdatedDate}");
-                                
+
 
                             }
                             catch (Exception ex)
@@ -927,17 +939,17 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
 
 
                             }
-                            catch(NotFoundException ex)
+                            catch (NotFoundException ex)
                             {
                                 Colored.WriteLine(ex.Message, ConsoleColor.Red);
                                 goto restartAdminMenu;
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
                                 Colored.WriteLine(ex.Message, ConsoleColor.Red);
                                 goto restartAdminMenu;
                             }
-                                break;
+                            break;
                         case "0":
                             goto restartAdminMenu;
                         default:
@@ -947,16 +959,57 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                     }
                     break;
                 case "5":
-                    Colored.WriteLine(" - - - PAYMENT MANAGEMENT - - - ",ConsoleColor.Gray);
+                    Colored.WriteLine(" - - - PAYMENT MANAGEMENT - - - ", ConsoleColor.Gray);
                     Console.WriteLine("[1] Get all payments");
                     Console.WriteLine("[2] Refund payment");
                     Console.WriteLine("[0] Go back to admin menu");
 
                     string paymentCommand = Console.ReadLine();
-                    switch(paymentCommand)
+                    switch (paymentCommand)
                     {
                         case "1":
 
+                            var payments = await adminService.GetAllPayments(currentUser);
+                            Colored.WriteLine("Here are all the payments in the system:", ConsoleColor.DarkGray);
+                            foreach (var payment in payments)
+                            {
+                                Console.WriteLine($"Order ID: {payment.OrderId}, Amount: {payment.Amount}, Date: {payment.PaymentDate}");
+                            }
+                            break;
+                        case "2":
+                            try
+                            {
+                            restartIdInput:
+                                Colored.Write("Enter the payment ID to refund: ", ConsoleColor.DarkYellow);
+                                if (!int.TryParse(Console.ReadLine(), out int paymentId))
+                                {
+                                    Colored.WriteLine("Invalid input.", ConsoleColor.Red);
+                                    goto restartIdInput;
+                                }
+
+                                await adminService.RefundPaymentAsync(paymentId, currentUser);
+                                Colored.WriteLine("Refund processed successfully.", ConsoleColor.Green);
+                            }
+                            catch (NotFoundException ex)
+                            {
+                                Colored.WriteLine($"Error processing refund: {ex.Message}", ConsoleColor.Red);
+                                goto restartAdminMenu;
+                            }
+                            catch (InvalidPaymentException ex)
+                            {
+                                Colored.WriteLine($"Error processing refund: {ex.Message}", ConsoleColor.Red);
+                                goto restartAdminMenu;
+                            }
+                            catch (Exception ex)
+                            {
+                                Colored.WriteLine($"Error processing refund: {ex.Message}", ConsoleColor.Red);
+                                goto restartAdminMenu;
+                            }
+                            break;
+                        case "0":
+                            goto restartAdminMenu;
+                        default:
+                            Colored.WriteLine("Invalid command. Please choose a valid option.", ConsoleColor.Red);
                             break;
                     }
                     break;
@@ -964,7 +1017,224 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
 
         }
 }
-//static async Task
+
+
+static async Task UserMenu(UserService userService, OrderService orderService, OrderDetailService orderDetailService, ProductService productService, PaymentService paymentService, User loggedInUser)
+{
+    bool userMenu = true;
+    if (loggedInUser.isAdmin == false)
+        while (userMenu)
+        {
+            Colored.WriteLine("> > > USER MENU < < <", ConsoleColor.Magenta);
+            Console.WriteLine("[1] View Profile");
+            Console.WriteLine("[2] Update Profile");
+            Console.WriteLine("[3] View Orders");
+            Console.WriteLine("[4] Place Order");
+            Console.WriteLine("[5] View Order Details");
+            Console.WriteLine("[6] Cancel Order");
+            Console.WriteLine("[7] Make Payment");
+            Console.WriteLine("[0] Exit");
+
+            string command = Console.ReadLine();
+
+        restartUserMenu:
+            switch (command)
+            {
+                case "1":
+                    try
+                    {
+                        Colored.WriteLine("Here is your user information:", ConsoleColor.Gray);
+                        var profile = await userService.ViewProfileAsync(loggedInUser.Id);
+                        Console.WriteLine($"[{profile.Id}] - {profile.FullName} - {profile.Email} - {profile.Address} - ${profile.Balance} - Admin? {profile.isAdmin}");
+                    }
+                    catch (NotFoundException ex)
+                    {
+                        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                        goto restartUserMenu;
+                    }
+                    catch (Exception ex)
+                    {
+                        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                        goto restartUserMenu;
+                    }
+                    break;
+                case "2":
+                    try
+                    {
+                        Colored.WriteLine("Please enter the information requested below:", ConsoleColor.DarkYellow);
+                    restartNameInput:
+                        Console.Write("Enter new full name: ");
+                        string newName = Console.ReadLine().Trim();
+                        if (string.IsNullOrEmpty(newName))
+                        {
+                            Colored.WriteLine("Product name cannot be empty.", ConsoleColor.Red);
+                            goto restartNameInput;
+                        }
+
+                    restartAddressInput:
+                        Console.Write("Enter new address: ");
+                        string newAddress = Console.ReadLine().Trim();
+                        if (string.IsNullOrEmpty(newAddress))
+                        {
+                            Colored.WriteLine("Address cannot be empty.", ConsoleColor.Red);
+                            goto restartAddressInput;
+                        }
+
+                    restartEmailInput:
+                        Console.Write("Enter new email: ");
+                        string newEmail = Console.ReadLine().Trim();
+                        if (string.IsNullOrEmpty(newEmail))
+                        {
+                            Colored.WriteLine("Address cannot be empty.", ConsoleColor.Red);
+                            goto restartEmailInput;
+                        }
+
+                    restartPasswordInput:
+                        Console.Write("Enter new password: ");
+                        string newPassword = Console.ReadLine().Trim();
+                        if (string.IsNullOrEmpty(newEmail))
+                        {
+                            Colored.WriteLine("Description cannot be empty.", ConsoleColor.Red);
+                            goto restartPasswordInput;
+                        }
+
+
+                        InsertUserDTO updateUserDTO = new InsertUserDTO()
+                        {
+                            FullName = newName,
+                            Address = newAddress,
+                            Email = newEmail,
+                            Password = newPassword
+                        };
+
+                        await userService.UpdateUserAsync(updateUserDTO, loggedInUser);
+                        Colored.WriteLine("Your profile was updated successfully!", ConsoleColor.Green);
+
+                    }
+                    catch (NotFoundException ex)
+                    {
+                        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                        goto restartUserMenu;
+                    }
+                    catch (Exception ex)
+                    {
+                        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                        goto restartUserMenu;
+                    }
+                    break;
+                case "3":
+                    await ViewOrders(orderService, loggedInUser);
+                    break;
+                case "4":
+                    await PlaceOrder(orderService, loggedInUser);
+                    break;
+                case "5":
+                    await ViewOrderDetails(orderDetailService, loggedInUser);
+                    break;
+                case "6":
+                    await CancelOrder(orderService, loggedInUser);
+                    break;
+                case "7":
+                    await MakePayment(userService, loggedInUser);
+                    break;
+                case "0":
+                    userMenu = false;
+                    Colored.WriteLine("Exiting the system.....", ConsoleColor.DarkYellow);
+                    break;
+                default:
+                    Colored.WriteLine("Invalid selection. Please try again.", ConsoleColor.Red);
+                    break;
+            }
+        }
+}
+
+
+
+static async Task ViewOrders(OrderService orderService, User user)
+{
+    try
+    {
+        Colored.WriteLine("Here are all the orders in your system:", ConsoleColor.Gray);
+        var orders = await orderService.GetUserOrdersAsync(user.Id);
+        foreach (var order in orders)
+        {
+            Console.WriteLine($"Order ID: [{order.Id}] - Total: {order.TotalAmount} - Status: {order.Status}\n");
+        }
+    }
+    catch (Exception ex)
+    {
+        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+    }
+}
+
+static async Task PlaceOrder(OrderService orderService, User user)
+{
+    try
+    {
+
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error creating order: {ex.Message}");
+    }
+}
+
+static async Task ViewOrderDetails(OrderDetailService orderDetailService, int userId)
+{
+    try
+    {
+        Console.Write("Enter Order ID: ");
+        if (int.TryParse(Console.ReadLine(), out int orderId))
+        {
+            var orderDetails = await orderDetailService.GetAllOrderDetailsAsync(orderId);
+            foreach (var detail in orderDetails)
+            {
+                Console.WriteLine($"Product ID: {detail.ProductId}, Quantity: {detail.Quantity}, Price Per Item: {detail.PricePerItem}");
+            }
+        }
+        else
+        {
+            Colored.WriteLine("Invalid Order ID.", ConsoleColor.Red);
+        }
+    }
+    catch (Exception ex)
+    {
+        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+    }
+}
+
+static async Task CancelOrder(OrderService orderService, User user)
+{
+    try
+    {
+        Console.Write("Enter Order ID to cancel: ");
+        if (int.TryParse(Console.ReadLine(), out int orderId))
+        {
+            await orderService.CancelOrderAsync(orderId, user);
+            Colored.WriteLine("Order canceled successfully.", ConsoleColor.Green);
+        }
+        else
+        {
+            Colored.WriteLine("Invalid Order ID.", ConsoleColor.Red);
+        }
+    }
+    catch (Exception ex)
+    {
+        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+    }
+}
+
+static async Task MakePayment(PaymentService paymentService, User user)
+{
+    try
+    {
+        //???????????
+    }
+    catch (Exception ex)
+    {
+        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+    }
+}
 
 
 

@@ -14,7 +14,7 @@ namespace Mini_E_Commerce_Project.Services.AdminInterfaces
     {
         Task<Order> CreateOrderAsync(CreateOrderDTO orderDTO, User currentUser);
         Task<List<GetOrderDTO>> GetUserOrdersAsync(int userId);
-        Task<List<GetOrderDetailDTO>> GetOrderByIdAsync(int orderId);
+        Task<GetOrderDTO> GetOrderByIdAsync(int orderId);
         Task CancelOrderAsync(int orderId, User currentUser);
 
     }
