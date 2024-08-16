@@ -34,6 +34,14 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
                 throw new NotFoundException("User not found.");
             }
 
+            var order = new Order
+            {
+                UserId = currentUser.Id,
+                OrderDate = DateTime.UtcNow,
+                TotalAmount = createOrderDTO.TotalAmount,
+                Status = StatusEnum.Pending
+            };
+       
 
             if (createOrderDTO.TotalAmount <= 0)
             {
@@ -42,13 +50,8 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             if (user.Balance < createOrderDTO.TotalAmount)
                 throw new InvalidOrderException("Insufficient balance to complete the order.");
 
-            var order = new Order
-            {
-                UserId = currentUser.Id,
-                OrderDate = DateTime.UtcNow,
-                TotalAmount = createOrderDTO.TotalAmount,
-                Status = StatusEnum.Pending
-            };
+
+
 
             await _orderRepository.CreateAsync(order);
             await _orderRepository.SaveChangesAsync();

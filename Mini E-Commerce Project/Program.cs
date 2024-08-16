@@ -47,7 +47,7 @@ restartSystemMenu:
             await CreateUser(userService);
             break;
         case "2":
-            await LoginUser(userService, adminService);
+            await LoginUser(userService, orderService, orderDetailService, productService, paymentService,adminService);
             break;
         case "0":
             systemProcess = false;
@@ -87,17 +87,27 @@ static bool ExportUsersToExcelAsync<Payment>(List<Payment> payments, string file
 
 }
 
-static async Task CreateUser(IUserService userService)
+static async Task CreateUser(UserService userService)
+
 {
 restartRegistrationProcess:
     try
     {
         bool isAdmin = false;
         Colored.Write("Are you an admin? (yes/no): ", ConsoleColor.Green);
-        string adminCheck = Console.ReadLine().ToLower().Trim();
-        if (adminCheck == "yes")
+        string adminCheck = Console.ReadLine();
+        if (adminCheck.ToLower().Trim() == "yes")
         {
             isAdmin = true;
+        }
+        else if(adminCheck == "no")
+        {
+            isAdmin = false;
+
+        }
+        else
+        {
+            Colored.WriteLine("Invalid command.",ConsoleColor.Red);
         }
 
         Console.Write("Enter full name: ");
@@ -131,7 +141,7 @@ restartRegistrationProcess:
             Address = address,
             Email = email,
             Password = password,
-            Balance = 10000m
+            Balance = 1000m
         };
         await userService.RegisterAsync(newUser);
         Colored.WriteLine($"Registration successful!\nHello, {fullName}! Balance: {newUser.Balance}", ConsoleColor.Green);
@@ -149,13 +159,15 @@ restartRegistrationProcess:
     }
     catch (Exception ex)
     {
+        Console.WriteLine(ex);
         Colored.WriteLine(ex.Message, ConsoleColor.Red);
+
         goto restartRegistrationProcess;
     }
 
 }
 
-static async Task LoginUser(UserService userService, AdminService adminService)
+static async Task LoginUser(UserService userService, OrderService orderService, OrderDetailService orderDetailService, ProductService productService, PaymentService paymentService, AdminService adminService)
 {
 restartLoginProcess:
     try
@@ -1013,6 +1025,9 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                             break;
                     }
                     break;
+                case "0":
+                    adminSystem = false;
+                    break;
             }
 
         }
@@ -1126,17 +1141,17 @@ static async Task UserMenu(UserService userService, OrderService orderService, O
                     await ViewOrders(orderService, loggedInUser);
                     break;
                 case "4":
-                    await PlaceOrder(orderService, loggedInUser);
+                    await PlaceOrder(orderService, productService, loggedInUser);
                     break;
                 case "5":
-                    await ViewOrderDetails(orderDetailService, loggedInUser);
+                    await ViewOrderDetails(orderDetailService, loggedInUser.Id);
                     break;
                 case "6":
                     await CancelOrder(orderService, loggedInUser);
                     break;
-                case "7":
-                    await MakePayment(userService, loggedInUser);
-                    break;
+                //case "7":
+                //    await MakePayment(userService, loggedInUser);
+                    //break;
                 case "0":
                     userMenu = false;
                     Colored.WriteLine("Exiting the system.....", ConsoleColor.DarkYellow);
@@ -1167,15 +1182,71 @@ static async Task ViewOrders(OrderService orderService, User user)
     }
 }
 
-static async Task PlaceOrder(OrderService orderService, User user)
+static async Task PlaceOrder(OrderService orderService, ProductService productService, User user)
 {
+restartOrderPlacement:
     try
     {
 
+        Colored.WriteLine("Here are all the products in your system:", ConsoleColor.DarkGray);
+        var products = await productService.GetProducts();
+        foreach (var product in products)
+        {
+            Console.WriteLine($"Product ID: [{product.Id}] - Name: {product.Name} - Price: {product.Price} - Stock: {product.Stock}");
+            Console.WriteLine($"Description: {product.Description}");
+        }
+
+        Colored.WriteLine("Please enter the order details below.", ConsoleColor.DarkYellow);
+        List<CreateOrderDetailDTO> orderDetails = new List<CreateOrderDetailDTO>();
+        bool addMoreItems = true;
+
+        while (addMoreItems)
+        {
+            Console.Write("Product ID: ");
+            if (!int.TryParse(Console.ReadLine(), out int productId))
+            {
+                throw new ArgumentNullException("Invalid product ID.");
+            }
+
+            Console.Write("Quantity: ");
+            if (!int.TryParse(Console.ReadLine(), out int quantity))
+            {
+                throw new InvalidOrderDetailException("Invalid quantity.");
+            }
+
+            orderDetails.Add(new CreateOrderDetailDTO
+            {
+                ProductId = productId,
+                Quantity = quantity,
+            });
+
+            Console.WriteLine("Would you like to add another item? (y/n)");
+            if (Console.ReadLine().ToLower() != "y")
+            {
+                addMoreItems = false;
+                break;
+            }
+        }
+
+        CreateOrderDTO createOrder = new CreateOrderDTO
+        {
+            UserId = user.Id,
+            OrderDetails = orderDetails,
+            Status = StatusEnum.Pending
+        };
+
+        var order = await orderService.CreateOrderAsync(createOrder, user);
+        Colored.WriteLine($"Order with ID {order.Id} was successfully placed!", ConsoleColor.Green);
+    }
+    catch(InvalidOrderDetailException ex)
+    {
+        Console.WriteLine($"Error creating order: {ex.Message}");
+        goto restartOrderPlacement;
     }
     catch (Exception ex)
     {
         Console.WriteLine($"Error creating order: {ex.Message}");
+        goto restartOrderPlacement;
     }
 }
 
@@ -1183,23 +1254,33 @@ static async Task ViewOrderDetails(OrderDetailService orderDetailService, int us
 {
     try
     {
-        Console.Write("Enter Order ID: ");
-        if (int.TryParse(Console.ReadLine(), out int orderId))
+        var orderDetails = await orderDetailService.GetAllOrderDetailsAsync(userId);
+
+        if (orderDetails == null || orderDetails.Count == 0)
         {
-            var orderDetails = await orderDetailService.GetAllOrderDetailsAsync(orderId);
-            foreach (var detail in orderDetails)
-            {
-                Console.WriteLine($"Product ID: {detail.ProductId}, Quantity: {detail.Quantity}, Price Per Item: {detail.PricePerItem}");
-            }
+            Colored.WriteLine("No order details found for this user.", ConsoleColor.Red);
+            return;
         }
-        else
+
+        Colored.WriteLine("Order Details:", ConsoleColor.DarkYellow);
+        foreach (var detail in orderDetails)
         {
-            Colored.WriteLine("Invalid Order ID.", ConsoleColor.Red);
+            Console.WriteLine($"Order ID: {detail.OrderId}");
+            Console.WriteLine($"Product ID: {detail.ProductId}");
+            Console.WriteLine($"Quantity: {detail.Quantity}");
+            Console.WriteLine($"Price Per Item: {detail.PricePerItem:C}");
+            Console.WriteLine("-------------------------------------------------");
         }
+    }
+    catch(NotFoundException ex)
+    {
+        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+        return;
     }
     catch (Exception ex)
     {
         Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+        return;
     }
 }
 

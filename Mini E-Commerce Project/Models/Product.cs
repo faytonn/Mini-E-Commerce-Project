@@ -10,5 +10,6 @@ namespace Mini_E_Commerce_Project.Models
         public int Stock {  get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
+        public int Quantity { get; set; }
     }
 }
