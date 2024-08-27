@@ -23,7 +23,7 @@ namespace Mini_E_Commerce_Project.Services.ADMIN.AdminInterfaces
 
         // ORDER MANAGEMENT
         Task CompleteOrderAsync(int orderId, User currentUser);
-        Task<List<GetOrderDTOAdmin>> GetAllOrdersAsync(User currentUser);
+        Task<List<GetOrderDTOAdmin>> GetAllOrdersAsync();
         Task<GetOrderDTOAdmin> GetOrderByIdAsync(int id, User currentUser);
         Task<InsertOrderDTO> UpdateOrderStatusAsync(int orderId, StatusEnum orderStatus, User currentUser);
         Task DeleteOrderAsync(int orderId, User currentUser);

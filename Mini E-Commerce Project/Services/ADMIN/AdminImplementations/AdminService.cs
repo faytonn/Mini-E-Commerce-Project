@@ -238,28 +238,27 @@ public class AdminService : IAdminService
     }
 
     // ORDER MANAGEMENT
-    public async Task<List<GetOrderDTOAdmin>> GetAllOrdersAsync(User currentUser)
+    public async Task<List<GetOrderDTOAdmin>> GetAllOrdersAsync()
     {
-        if (!currentUser.isAdmin)
-        {
-            throw new UnAuthorizedAccessException("Only admins can create products.");
-        }
 
-        var orders = await _orderRepository.GetAllAsync();
+        var orders = await _orderRepository.GetAllAsync("User","OrderDetails.Product");
         var orderDTOs = new List<GetOrderDTOAdmin>();
 
         foreach (var order in orders)
         {
-            orderDTOs.Add(new GetOrderDTOAdmin
+
+
+            GetOrderDTOAdmin getDto = new()
             {
                 Id = order.Id,
                 UserId = order.UserId,
-                UsersName = order.Users.FullName,
+                UsersName = order.User.FullName,
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
                 Status = order.Status,
                 OrderDetails = order.OrderDetails,
-            }); ;
+            }; 
+            orderDTOs.Add(getDto);
         }
 
         return orderDTOs;
@@ -283,7 +282,7 @@ public class AdminService : IAdminService
         {
             Id = order.Id,
             UserId = order.UserId,
-            UsersName = order.Users.FullName,
+            UsersName = order.User.FullName,
             OrderDate = order.OrderDate,
             TotalAmount = order.TotalAmount,
             Status = order.Status,

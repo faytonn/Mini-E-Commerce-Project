@@ -14,10 +14,10 @@ namespace Mini_E_Commerce_Project.Configurations
             builder.Property(o => o.OrderDate).IsRequired();
             builder.Property(o => o.TotalAmount).IsRequired();
             builder.Property(o => o.Status).IsRequired().HasDefaultValue(StatusEnum.Pending);
-            builder.HasOne(o => o.Users).WithMany().HasForeignKey(o => o.UserId);
-            builder.HasMany(o => o.OrderDetails).WithOne(od => od.Orders).HasForeignKey(od => od.OrderId);
+            builder.HasOne(o => o.User).WithMany().HasForeignKey(o => o.UserId);
+            builder.HasMany(o => o.OrderDetails).WithOne(od => od.Order).HasForeignKey(od => od.OrderId);
 
-            builder.HasCheckConstraint("CK_TotalAmount", "TotalAmount > 0");
+            builder.HasCheckConstraint("CK_TotalAmount", "TotalAmount >= 0");
         }
     }
 }

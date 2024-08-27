@@ -28,31 +28,38 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
         }
         public async Task CreatePaymentAsync(CreatePaymentDTO paymentDTO, int userId)
         {
+            bool orderProcess = true;
+
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
                 throw new NotFoundException("User not found.");
 
             var order = await _orderRepository.GetSingleAsync(x => x.UserId == userId && x.Status == Enums.StatusEnum.Pending, "OrderDetails.Product", "User");
+            if (orderProcess)
+            {
+                if (order is null)
+                    throw new NotFoundException("Order is not found");
 
-            if (order is null)
-                throw new NotFoundException("Order is not found");
+                if (order.OrderDetails.Count == 0)
+                    throw new NotFoundException("Order is empty");
 
-            if (order.OrderDetails.Count == 0)
-                throw new NotFoundException("Order is empty");
+                if (paymentDTO.Amount <= 0)
+                    throw new InvalidPaymentException("Amount should be greater than zero.");
 
-            if (paymentDTO.Amount <= 0)
-                throw new InvalidPaymentException("Amount should be greater than zero.");
+                if (paymentDTO.Amount != order.TotalAmount)
+                    throw new InvalidPaymentException("Payment amount does not match order total.");
 
-            if (paymentDTO.Amount != order.TotalAmount)
-                throw new InvalidPaymentException("Payment amount does not match order total.");
+                if (user.Balance < paymentDTO.Amount)
+                    throw new InvalidPaymentException("Insufficient balance to complete the order.");
 
-            if (user.Balance < paymentDTO.Amount)
-                throw new InvalidPaymentException("Insufficient balance to complete the order.");
-
-
-            user.Balance -= paymentDTO.Amount;
-            _userRepository.Update(user);
-            await _userRepository.SaveChangesAsync();
+                user.Balance -= paymentDTO.Amount;
+                _userRepository.Update(user);
+                await _userRepository.SaveChangesAsync();
+            }
+            else
+            {
+               orderProcess = false;
+            }
 
 
             foreach (var detail in order.OrderDetails)
@@ -92,6 +99,8 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
 
             await _paymentRepository.CreateAsync(payment);
             await _paymentRepository.SaveChangesAsync();
+
+
         }
 
         public async Task<GetPaymentDTOAdmin> GetPaymentByIdAsync(int id)

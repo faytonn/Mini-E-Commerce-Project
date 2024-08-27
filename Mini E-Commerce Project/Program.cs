@@ -52,40 +52,40 @@ restartSystemMenu:
         case "0":
             systemProcess = false;
             break;
-
-
-
+        default:
+            Colored.WriteLine("Invalid selection. Please try again.", ConsoleColor.Red);
+            break;
     }
 }
 
 
 
-static bool ExportUsersToExcelAsync<Payment>(List<Payment> payments, string filePath, string sheetName)
-{
-    bool exported = false;
-    try
-    {
-        using (IXLWorkbook workbook = new XLWorkbook())
-        {
-            var worksheet = workbook.Worksheets.Add(sheetName);
-            worksheet.Cell(1, 1).Value = "Payment ID";
-            worksheet.Cell(1, 2).Value = "Order ID";
-            worksheet.Cell(1, 3).Value = "Amount";
-            worksheet.Cell(1, 4).Value = "Payment Date";
+//static bool ExportUsersToExcelAsync<Payment>(List<Payment> payments, string filePath, string sheetName)
+//{
+//    bool exported = false;
+//    try
+//    {
+//        using (IXLWorkbook workbook = new XLWorkbook())
+//        {
+//            var worksheet = workbook.Worksheets.Add(sheetName);
+//            worksheet.Cell(1, 1).Value = "Payment ID";
+//            worksheet.Cell(1, 2).Value = "Order ID";
+//            worksheet.Cell(1, 3).Value = "Amount";
+//            worksheet.Cell(1, 4).Value = "Payment Date";
 
-            workbook.SaveAs(filePath);
-            exported = true;
-            ExportUsersToExcelAsync<Payment>(payments, @"C:\Users\Fatima\OneDrive\Desktop\EXCEL E-COMMERCE.xlsx", "Payments");
-        }
-    }
-    catch
-    {
-        exported = false;
-    }
+//            workbook.SaveAs(filePath);
+//            exported = true;
+//            ExportUsersToExcelAsync<Payment>(payments, @"C:\Users\Fatima\OneDrive\Desktop\EXCEL E-COMMERCE.xlsx", "Payments");
+//        }
+//    }
+//    catch
+//    {
+//        exported = false;
+//    }
 
-    return exported;
+//    return exported;
 
-}
+//}
 
 static async Task CreateUser(UserService userService)
 
@@ -315,6 +315,9 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                             break;
                         case "0":
                             goto restartAdminMenu;
+                        default:
+                            Colored.WriteLine("Invalid selection. Please try again.", ConsoleColor.Red);
+                            break;
                     }
                     break;
 
@@ -413,8 +416,8 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
 
                             restartIdInput:
                                 Console.Write("Enter the product ID that you want to update: ");
-                                int updateProduct = int.Parse(Console.ReadLine());
-                                if (!int.TryParse(Console.ReadLine(), out updateProduct) || updateProduct <= 0)
+
+                                if (!int.TryParse(Console.ReadLine(), out int updateProduct) || updateProduct <= 0)
                                 {
                                     Colored.WriteLine("Invalid input.", ConsoleColor.Red);
                                     goto restartIdInput;
@@ -560,6 +563,9 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                             break;
                         case "0":
                             goto restartAdminMenu;
+                        default:
+                            Colored.WriteLine("Invalid selection. Please try again.", ConsoleColor.Red);
+                            break;
                     }
 
                     break;
@@ -578,7 +584,7 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                         case "1":
                             try
                             {
-                                var orders = await adminService.GetAllOrdersAsync(currentUser);
+                                var orders = await adminService.GetAllOrdersAsync();
                                 Colored.WriteLine("Here are all the orders in the system:", ConsoleColor.DarkGray);
                                 foreach (var order in orders)
                                 {
@@ -618,15 +624,15 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                         case "3":
                             try
                             {
-                                var orders = await adminService.GetAllOrdersAsync(currentUser);
+                                var orders = await adminService.GetAllOrdersAsync();
 
                                 Colored.WriteLine("Here are all the orders in the system:", ConsoleColor.Gray);
                                 foreach (var order in orders)
                                 {
                                     Console.WriteLine($"Order ID: {order.Id} - User: {order.UsersName} - Total: {order.TotalAmount} - Status: {order.Status}\nOrder Date: {order.OrderDate}\n\nOrder Details:");
-                                    foreach (var detail in order.OrderDetails)
+                                    foreach (OrderDetail detail in order.OrderDetails)
                                     {
-                                        Console.WriteLine($"Order ID: [{detail.OrderId}] - Order Name : {detail.Orders} - Products: {detail.Product} - Quantity: {detail.Quantity} - Price per item: {detail.PricePerItem}");
+                                        Console.WriteLine($"Order ID: [{detail.OrderId}] - Order Name : {detail.Order} - Products: {detail.Product} - Quantity: {detail.Quantity} - Price per item: {detail.PricePerItem}");
                                     }
                                 }
 
@@ -674,7 +680,7 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                         case "4":
                             try
                             {
-                                var orders = await adminService.GetAllOrdersAsync(currentUser);
+                                var orders = await adminService.GetAllOrdersAsync();
 
                                 Colored.WriteLine("Here are all the orders in the system:", ConsoleColor.Gray);
                                 foreach (var order in orders)
@@ -682,7 +688,7 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                                     Console.WriteLine($"Order ID: {order.Id} - User: {order.UsersName} - Total: {order.TotalAmount} - Status: {order.Status}\nOrder Date: {order.OrderDate}\n\nOrder Details:");
                                     foreach (var detail in order.OrderDetails)
                                     {
-                                        Console.WriteLine($"Order ID: [{detail.OrderId}] - Order Name : {detail.Orders} - Products: {detail.Product} - Quantity: {detail.Quantity} - Price per item: {detail.PricePerItem}");
+                                        Console.WriteLine($"Order ID: [{detail.OrderId}] - Order Name : {detail.Order} - Products: {detail.Product} - Quantity: {detail.Quantity} - Price per item: {detail.PricePerItem}");
                                     }
                                 }
 
@@ -722,7 +728,7 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                         case "5":
                             try
                             {
-                                var orders = await adminService.GetAllOrdersAsync(currentUser);
+                                var orders = await adminService.GetAllOrdersAsync();
 
                                 Colored.WriteLine("Here are all the orders in the system:", ConsoleColor.Gray);
                                 foreach (var order in orders)
@@ -730,7 +736,7 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                                     Console.WriteLine($"Order ID: {order.Id} - User: {order.UsersName} - Total: {order.TotalAmount} - Status: {order.Status}\nOrder Date: {order.OrderDate}\n\nOrder Details:");
                                     foreach (var detail in order.OrderDetails)
                                     {
-                                        Console.WriteLine($"Order ID: [{detail.OrderId}] - Order Name : {detail.Orders} - Products: {detail.Product} - Quantity: {detail.Quantity} - Price per item: {detail.PricePerItem}");
+                                        Console.WriteLine($"Order ID: [{detail.OrderId}] - Order Name : {detail.Order} - Products: {detail.Product} - Quantity: {detail.Quantity} - Price per item: {detail.PricePerItem}");
                                     }
                                 }
 
@@ -797,7 +803,7 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                         case "1":
                             try
                             {
-                                var orders = await adminService.GetAllOrdersAsync(currentUser);
+                                var orders = await adminService.GetAllOrdersAsync();
 
                                 Colored.WriteLine("Here are all the orders in the system:", ConsoleColor.Gray);
                                 foreach (var order in orders)
@@ -845,7 +851,7 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                         case "2":
                             try
                             {
-                                var orders = await adminService.GetAllOrdersAsync(currentUser);
+                                var orders = await adminService.GetAllOrdersAsync();
 
                                 Colored.WriteLine("Here are all the orders in the system:", ConsoleColor.Gray);
                                 foreach (var order in orders)
@@ -908,7 +914,7 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                         case "3":
                             try
                             {
-                                var orders = await adminService.GetAllOrdersAsync(currentUser);
+                                var orders = await adminService.GetAllOrdersAsync();
 
                                 Colored.WriteLine("Here are all the orders in the system:", ConsoleColor.Gray);
                                 foreach (var order in orders)
@@ -1027,6 +1033,9 @@ static async Task AdminMenu(AdminService adminService, User currentUser)
                     break;
                 case "0":
                     adminSystem = false;
+                    break;
+                default:
+                    Colored.WriteLine("Invalid selection. Please try again.", ConsoleColor.Red);
                     break;
             }
 
@@ -1149,9 +1158,9 @@ static async Task UserMenu(UserService userService, OrderService orderService, O
                 case "6":
                     await CancelOrder(orderService, loggedInUser);
                     break;
-                //case "7":
-                //    await MakePayment(userService, loggedInUser);
-                    //break;
+                case "7":
+                    await MakePayment(paymentService, orderService, loggedInUser);
+                    break;
                 case "0":
                     userMenu = false;
                     Colored.WriteLine("Exiting the system.....", ConsoleColor.DarkYellow);
@@ -1232,7 +1241,8 @@ restartOrderPlacement:
         {
             UserId = user.Id,
             OrderDetails = orderDetails,
-            Status = StatusEnum.Pending
+            Status = StatusEnum.Pending,
+            TotalAmount=0
         };
 
         var order = await orderService.CreateOrderAsync(createOrder, user);
@@ -1245,7 +1255,7 @@ restartOrderPlacement:
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Error creating order: {ex.Message}");
+        Console.WriteLine($"Error creating order: {ex}");
         goto restartOrderPlacement;
     }
 }
@@ -1305,15 +1315,47 @@ static async Task CancelOrder(OrderService orderService, User user)
     }
 }
 
-static async Task MakePayment(PaymentService paymentService, User user)
+static async Task MakePayment(PaymentService paymentService, OrderService orderService, User user)
 {
     try
     {
-        //???????????
+        Colored.WriteLine("Here are all the orders in your system:", ConsoleColor.Gray);
+        var orders = await orderService.GetUserOrdersAsync(user.Id);
+        foreach (var order in orders)
+        {
+            Console.WriteLine($"Order ID: [{order.Id}] - Total: {order.TotalAmount} - Status: {order.Status}\n");
+        }
+
+        Console.Write("Enter order ID: ");
+        int.TryParse(Console.ReadLine(), out int orderId);
+
+        Console.Write("Enter amount: ");
+        int.TryParse(Console.ReadLine(), out int amount);
+
+        CreatePaymentDTO paymentDTO = new CreatePaymentDTO
+        {
+            OrderId = orderId,
+            Amount = amount
+        };
+
+        await paymentService.CreatePaymentAsync(paymentDTO, user.Id);
+        Colored.WriteLine("Payment successfully processed!", ConsoleColor.Green);
+
+    }
+    catch(InvalidPaymentException ex)
+    {
+        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+        return;
+    }
+    catch (NotFoundException ex)
+    {
+        Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+        return;
     }
     catch (Exception ex)
     {
         Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+        return;
     }
 }
 

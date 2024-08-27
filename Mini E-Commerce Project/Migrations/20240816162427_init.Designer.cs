@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Mini_E_Commerce_Project.Contexts;
 
@@ -11,9 +12,10 @@ using Mini_E_Commerce_Project.Contexts;
 namespace Mini_E_Commerce_Project.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240816162427_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -203,18 +205,18 @@ namespace Mini_E_Commerce_Project.Migrations
 
             modelBuilder.Entity("Mini_E_Commerce_Project.Models.Order", b =>
                 {
-                    b.HasOne("Mini_E_Commerce_Project.Models.User", "User")
+                    b.HasOne("Mini_E_Commerce_Project.Models.User", "Users")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Mini_E_Commerce_Project.Models.OrderDetail", b =>
                 {
-                    b.HasOne("Mini_E_Commerce_Project.Models.Order", "Order")
+                    b.HasOne("Mini_E_Commerce_Project.Models.Order", "Orders")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -226,7 +228,7 @@ namespace Mini_E_Commerce_Project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.Navigation("Orders");
 
                     b.Navigation("Product");
                 });

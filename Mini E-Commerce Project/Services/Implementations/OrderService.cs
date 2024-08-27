@@ -43,7 +43,7 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
             };
        
 
-            if (createOrderDTO.TotalAmount <= 0)
+            if (createOrderDTO.TotalAmount < 0)
             {
                 throw new InvalidOrderException("Order amount must be greater than zero.");
             }
@@ -54,7 +54,7 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
 
 
             await _orderRepository.CreateAsync(order);
-            await _orderRepository.SaveChangesAsync();
+                await _orderRepository.SaveChangesAsync();
 
             foreach (var detail in createOrderDTO.OrderDetails)
             {
@@ -71,12 +71,13 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
 
                 var orderDetail = new OrderDetail
                 {
-                    OrderId = detail.OrderId,
+                    OrderId = order.Id,
                     ProductId = detail.ProductId,
                     Quantity = detail.Quantity,
-                    PricePerItem = detail.PricePerItem,
+                    PricePerItem = product.Price,
                 };
 
+                order.TotalAmount += orderDetail.PricePerItem * orderDetail.Quantity;
                 await _orderDetailRepository.CreateAsync(orderDetail);
             }
 
@@ -84,6 +85,8 @@ namespace Mini_E_Commerce_Project.Services.AdminImplementations
 
             user.Balance -= createOrderDTO.TotalAmount;
             _userRepository.Update(user);
+            _orderRepository.Update(order);
+            await _orderRepository.SaveChangesAsync();
             await _userRepository.SaveChangesAsync();
 
             return order;
